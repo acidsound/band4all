@@ -146,8 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("peer:establish datachannel");
     });
     peer.on("data", (data) => {
-      console.log("peer:datachannel:", data);
-      const msg = data;
+      const msg = data.toString();
       if (msg[0] === "@") {
         const [key, vel, senderId] = msg.slice(1).split("/");
         if (senderId !== userId) {
