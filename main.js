@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const peer = new SimplePeer({ initiator });
     peer.on("signal", (signal) => {
       console.log("peer:onSignal", signal);
-      sendMessage({ type: EVENT_TYPE.SIGNALING, signal, id: peerId });
+      sendMessage({ type: EVENT_TYPE.SIGNALING, signal, peerId });
     });
     peer.on("connect", () => {
       console.log("peer:establish datachannel");
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
     peer.on("close", () => {
-      console.log("peer:close peer. id:", peerId);
+      console.log("peer:close peer. peerId:", peerId);
     });
     peer.on("error", (err) => {
       console.log("peer:err:", err);
@@ -175,12 +175,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     console.log("onMessageArrived", parsedMessage);
     ({
-      [EVENT_TYPE.JOIN]: ({ id }) =>
-        createPeerFactory({ peerId: id, initiator: true }),
-      [EVENT_TYPE.LEAVE]: ({ id }) => peers[id]?.destroy() || delete peers[id],
-      [EVENT_TYPE.SIGNALING]: ({ id, signal }) =>
+      [EVENT_TYPE.JOIN]: ({ peerId }) =>
+        createPeerFactory({ peerId, initiator: true }),
+      [EVENT_TYPE.LEAVE]: ({ peerId }) =>
+        peers[peerId]?.destroy() || delete peers[peerId],
+      [EVENT_TYPE.SIGNALING]: ({ peerId, signal }) =>
         (
-          peers[id] || createPeerFactory({ peerId: id, initiator: false })
+          peers[peerId] || createPeerFactory({ peerId, initiator: false })
         ).signal(signal),
     }[parsedMessage.type](parsedMessage));
   };
