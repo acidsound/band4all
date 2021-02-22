@@ -171,13 +171,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     console.log("onMessageArrived", parsedMessage);
     ({
-      ["join"]: ({ id }) => createPeerFactory({ peerId: id, initiator: true }),
-      ["leave"]: ({ id }) => peers[id]?.destroy() || delete peers[id],
-      ["signal"]: ({ id, signal }) =>
+      [`${room}/join`]: ({ id }) =>
+        createPeerFactory({ peerId: id, initiator: true }),
+      [`${room}/leave`]: ({ id }) => peers[id]?.destroy() || delete peers[id],
+      [`${room}/signal/${userId}`]: ({ id, signal }) =>
         (
           peers[id] || createPeerFactory({ peerId: id, initiator: false })
         ).signal(signal),
-    }[message.destinationName.split("/")?.[1]](parsedMessage));
+    }[message.destinationName](parsedMessage));
   };
 
   var client = new Paho.MQTT.Client(
