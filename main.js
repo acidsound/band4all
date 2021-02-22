@@ -105,14 +105,10 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   // network stuff
-  const EVENT_TYPE = {
-    JOIN: 1,
-    LEAVE: 2,
-    SIGNALING: 3,
-  };
   let peers = {};
   let room = new URLSearchParams(location.search).get("room") || "lobby";
-  const sendMessage = (msg) => {
+  const sendMessage = (dstName, msg) => {
+    console.log(dstName);
     const message = Object.assign(
       new Paho.MQTT.Message(
         JSON.stringify({
@@ -121,15 +117,16 @@ document.addEventListener("DOMContentLoaded", function () {
         })
       ),
       {
-        destinationName: room,
+        destinationName: dstName,
       }
     );
     client.send(message);
   };
   const onConnect = function () {
-    client.subscribe(room);
+    client.subscribe(`${room}/join`);
     client.subscribe(`${room}/leave`);
-    sendMessage({ type: EVENT_TYPE.JOIN });
+    client.subscribe(`${room}/signal/${userId}`);
+    sendMessage(`${room}/join`);
   };
   const onConnectionLost = function (responseObject) {
     if (responseObject.errorCode !== 0) {
@@ -140,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const peer = new SimplePeer({ initiator });
     peer.on("signal", (signal) => {
       console.log("peer:onSignal", signal);
-      sendMessage({ type: EVENT_TYPE.SIGNALING, signal, peerId });
+      sendMessage(`${room}/signal/${peerId}`, { signal });
     });
     peer.on("connect", () => {
       console.log("peer:establish datachannel");
@@ -174,15 +171,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     console.log("onMessageArrived", parsedMessage);
     ({
-      [EVENT_TYPE.JOIN]: ({ peerId }) =>
-        createPeerFactory({ peerId, initiator: true }),
-      [EVENT_TYPE.LEAVE]: ({ peerId }) =>
-        peers[peerId]?.destroy() || delete peers[peerId],
-      [EVENT_TYPE.SIGNALING]: ({ peerId, signal }) =>
+      ["join"]: ({ id }) => createPeerFactory({ peerId: id, initiator: true }),
+      ["leave"]: ({ id }) => peers[id]?.destroy() || delete peers[id],
+      ["signal"]: ({ id, signal }) =>
         (
-          peers[peerId] || createPeerFactory({ peerId, initiator: false })
+          peers[id] || createPeerFactory({ peerId: id, initiator: false })
         ).signal(signal),
-    }[parsedMessage.type](parsedMessage));
+    }[message.destinationName.split("/")?.[1]](parsedMessage));
   };
 
   var client = new Paho.MQTT.Client(
@@ -194,9 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
   client.onMessageArrived = onMessageArrived;
 
   const willMessage = Object.assign(
-    new Paho.MQTT.Message(
-      JSON.stringify({ id: userId, type: EVENT_TYPE.LEAVE })
-    ),
+    new Paho.MQTT.Message(JSON.stringify({ id: userId })),
     {
       destinationName: `${room}/leave`,
       qos: 0,
@@ -208,7 +201,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const broadCast = function ({ destination, vel, key }) {
     Object.values(peers).forEach((peer) => {
-      peer.send(`@${key}/${vel}/${userId}`);
+      if (peer.connected) {
+        peer.send(`@${key}/${vel}/${userId}`);
+      }
     });
   };
 
