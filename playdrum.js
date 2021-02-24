@@ -18,33 +18,48 @@ const playKick = function (context, vel = 1.0, { tone = 167.1, decay = 0.5 }) {
     osc.stop(c + decay + 0.1);
 };
 
-const playHat = function (context, vel = 1.0, { tone = 130.81, decay = 0.5 }) {
+/* http://joesul.li/van/synthesizing-hi-hats/ */
+const playHat = function (context, vel = 1.0, { bp = 10000, hp = 7000, decay = 0.3 }) {
     const c = context.currentTime;
-    oscEnvelope = context.createGain();
-    bndPass = context.createBiquadFilter();
-    bndPass.type = 'bandpass';
-    bndPass.frequency.value = 20000;
-    bndPass.Q.value = 0.2;
-    hipass = context.createBiquadFilter();
-    hipass.type = "highpass";
-    hipass.frequency.value = 5000;
+    fundamental = 40;
+    var ratios = [2, 3, 4.16, 5.43, 6.79, 8.21];
 
-    bndPass.connect(hipass);
-    hipass.connect(oscEnvelope);
-    oscEnvelope.connect(context.destination);
-    const ratios = [1, 1.3420, 1.2312, 1.6532, 1.9523, 2.1523];
-    ratios.forEach((ratio) => {
+    // Always useful
+    var when = context.currentTime;
+
+    var gain = context.createGain();
+
+    // Bandpass
+    var bandpass = context.createBiquadFilter();
+    bandpass.type = "bandpass";
+    bandpass.frequency.value = bp;
+
+    // Highpass
+    var highpass = context.createBiquadFilter();
+    highpass.type = "highpass";
+    highpass.frequency.value = hp;
+
+    // Connect the graph
+    bandpass.connect(highpass);
+    highpass.connect(gain);
+    gain.connect(context.destination);
+
+    // Create the oscillators
+    ratios.forEach(function (ratio) {
         var osc = context.createOscillator();
         osc.type = "square";
-        osc.frequency.value = tone * ratio;
-        osc.connect(bndPass);
-        osc.start(c);
-        osc.stop(c + decay);
+        // Frequency is the fundamental * this oscillator's ratio
+        osc.frequency.value = fundamental * ratio;
+        osc.connect(bandpass);
+        osc.start(when);
+        osc.stop(when + 0.3);
     });
-    oscEnvelope.gain.setValueAtTime(0.00001 * vel, c);
-    oscEnvelope.gain.exponentialRampToValueAtTime(1 * vel, c + 0.067 * decay);
-    oscEnvelope.gain.exponentialRampToValueAtTime(0.3 * vel, c + 0.1 * decay);
-    oscEnvelope.gain.exponentialRampToValueAtTime(0.00001 * vel, c + decay);
+
+    // Define the volume envelope
+    gain.gain.setValueAtTime(0.00001*vel, when);
+    gain.gain.exponentialRampToValueAtTime(1*vel, when + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.3*vel, when + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.00001*vel, when + decay);
 };
 
 const noiseBuffer = (context) => {
