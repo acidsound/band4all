@@ -129,7 +129,12 @@ document.addEventListener("DOMContentLoaded", function () {
         60: ()=>playKick(context, vel, {}),
         62: ()=>playClap(context, vel, {}),
         64: ()=>playSnare(context, vel, {}),
+        65: ()=>playKick(context, vel, {tone:300.0, decay:1.5}),
         66: ()=>playHat(context, vel, {}),
+        67: ()=>playKick(context, vel, {tone:500.0, decay:1.5}),
+        69: ()=>playKick(context, vel, {tone:600.0, decay:1.5}),
+        70: ()=>playHat(context, vel, {decay:2.0}),
+        71: ()=>playKick(context, vel, {tone:750.0, decay:1.5}),
         0: ()=>{},
       };
       (drumMap[key] || drumMap[0])();
