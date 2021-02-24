@@ -143,12 +143,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   playKey = function (vel, key, isLocal = true) {
     let elem = document.querySelector(`[data-note='${key}']`);
-    if (!elem) return;
     if (vel > 0) {
-      elem.classList.add("active");
+      elem && elem.classList.add("active");
       playNote(context, vel, midi2Freq(+key));
     } else {
-      elem.classList.remove("active");
+      elem && elem.classList.remove("active");
     }
     if (isLocal) {
       broadCast({ destination: room, vel, key });
@@ -171,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //, 'mousedown', 'touchstart']
     window.addEventListener(downEvent, function (e) {
       const key = keyMap[e.which] || e.target.getAttribute("data-note");
-      playKey(1, key);
+      key && playKey(1, key);
     });
   }
   ["keyup"].map((
@@ -179,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ) =>
     window.addEventListener(upEvent, function (e) {
       const key = keyMap[e.which] || e.target.getAttribute("data-note");
-      playKey(0, key);
+      key && playKey(0, key);
     })
   );
 });
