@@ -5,106 +5,11 @@
  * DS208: Avoid top-level this
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-this.keyMap = {
-  90: 60,
-  83: 61,
-  88: 62,
-  68: 63,
-  67: 64,
-  86: 65,
-  71: 66,
-  66: 67,
-  72: 68,
-  78: 69,
-  74: 70,
-  77: 71,
-  188: 72,
-  76: 73,
-  190: 74,
-  186: 75,
-  191: 76,
-  81: 72,
-  50: 73,
-  87: 74,
-  51: 75,
-  69: 76,
-  82: 77,
-  53: 78,
-  84: 79,
-  54: 80,
-  89: 81,
-  55: 82,
-  85: 83,
-  73: 84,
-  57: 85,
-  79: 86,
-  48: 87,
-  80: 88,
-  219: 89,
-  187: 90,
-  221: 91,
-};
 document.addEventListener("DOMContentLoaded", function () {
-  let userId = localStorage.getItem("userId");
-  if (!userId?.length) {
-    userId = UUID.generate();
-    localStorage.setItem("userId", userId);
-  }
+  let userId = UUID.generate();
   console.log("init", userId);
   const context = new AudioContext();
 
-  const midi2Freq = (midi) => Math.pow(2, (midi - 69) / 12) * 440;
-  const playNote = function (vel, freq) {
-    const c = context.currentTime;
-
-    const osc1 = context.createOscillator();
-    osc1.type = "triangle";
-    osc1.frequency.value = freq;
-    osc1.start(0);
-
-    const osc2 = context.createOscillator();
-    osc2.start(0);
-    osc2.type = "square";
-    osc2.frequency.value = 3;
-
-    const gain = context.createGain();
-
-    osc1.connect(gain);
-    osc2.connect(osc1.frequency);
-
-    const comp = context.createDynamicsCompressor();
-    comp.threshold.value = -50;
-    comp.knee.value = 40;
-    comp.ratio.value = 12;
-    comp.reduction.value = -20;
-    comp.attack.value = 0;
-    comp.release.value = 0.25;
-
-    gain.connect(comp);
-    const delay = context.createDelay(1);
-    delay.delayTime.value = 0.4;
-    //    comp.connect delay
-    //    gain.connect delay
-
-    const panner = context.createStereoPanner();
-    panner.pan.setValueAtTime(-1, c);
-    panner.pan.linearRampToValueAtTime(1, c + 0.5);
-    panner.pan.linearRampToValueAtTime(-1, c + 1);
-    //     panner.pan.linearRampToValueAtTime 1, c + 0.75
-    //     panner.pan.linearRampToValueAtTime -1, c + 1
-
-    delay.connect(panner);
-    panner.connect(context.destination);
-    gain.connect(context.destination);
-
-    gain.gain.setValueAtTime(0, c);
-    gain.gain.linearRampToValueAtTime(vel, c + 0.02);
-    gain.gain.linearRampToValueAtTime(0, c + 0.5);
-    osc1.stop(context.currentTime + 1);
-    osc2.stop(context.currentTime + 1);
-  };
-
-  // network stuff
   let peers = {};
   let room = new URLSearchParams(location.search).get("room") || "lobby";
   const sendMessage = (dstName, msg) => {
@@ -133,6 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("onConnectionLost:", responseObject.errorMessage);
     }
   };
+
+  /* webRTC datachannel stuff */
   const createPeerFactory = ({ peerId, initiator }) => {
     const peer = new SimplePeer({ initiator });
     peer.on("signal", (signal) => {
@@ -145,9 +52,14 @@ document.addEventListener("DOMContentLoaded", function () {
     peer.on("data", (data) => {
       const msg = data.toString();
       if (msg[0] === "@") {
-        const [key, vel, senderId] = msg.slice(1).split("/");
+        const [prg, key, vel, senderId] = msg.slice(1).split("/");
         if (senderId !== userId) {
-          playKey(vel, key, false);
+          const programMap = {
+            "drum": ()=> playDrum(vel, key, false),
+            "piano": ()=> playKey(vel, key, false),
+            "none": ()=> {}
+          };
+          (programMap[prg] || programMap["none"])();
         }
       }
     });
@@ -203,9 +115,30 @@ document.addEventListener("DOMContentLoaded", function () {
   const broadCast = function ({ destination, vel, key }) {
     Object.values(peers).forEach((peer) => {
       if (peer.connected) {
-        peer.send(`@${key}/${vel}/${userId}`);
+        peer.send(`@drum/${key}/${vel}/${userId}`);
       }
     });
+  };
+
+  playDrum = function (vel, key, isLocal = true) {
+    let elem = document.querySelector(`[data-note='${key}']`);
+    if (!elem) return;
+    if (vel > 0) {
+      elem.classList.add("active");
+      const drumMap = {
+        60: ()=>playKick(context, vel, {}),
+        62: ()=>playClap(context, vel, {}),
+        64: ()=>playSnare(context, vel, {}),
+        66: ()=>playHat(context, vel, {}),
+        0: ()=>{},
+      };
+      (drumMap[key] || drumMap[0])();
+    } else {
+      elem.classList.remove("active");
+    }
+    if (isLocal) {
+      broadCast({ destination: room, vel, key });
+    }
   };
 
   playKey = function (vel, key, isLocal = true) {
@@ -213,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!elem) return;
     if (vel > 0) {
       elem.classList.add("active");
-      playNote(vel, midi2Freq(+key));
+      playNote(context, vel, midi2Freq(+key));
     } else {
       elem.classList.remove("active");
     }
@@ -229,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
           (input[1].onmidimessage = function ({ data }) {
             const [msg, key, val] = data;
             if (msg === 144) {
-              playKey(val / 127.0, key);
+              playDrum(val / 127.0, key);
             }
           })
       )
@@ -238,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //, 'mousedown', 'touchstart']
     window.addEventListener(downEvent, function (e) {
       const key = keyMap[e.which] || e.target.getAttribute("data-note");
-      playKey(1, key);
+      playDrum(1, key);
     });
   }
   ["keyup"].map((
@@ -246,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ) =>
     window.addEventListener(upEvent, function (e) {
       const key = keyMap[e.which] || e.target.getAttribute("data-note");
-      playKey(0, key);
+      playDrum(0, key);
     })
   );
 });
