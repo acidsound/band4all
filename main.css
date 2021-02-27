@@ -164,7 +164,6 @@ ul#piano li span.active{
   clear:both;
 }
 
-
 /* Animation */
 @-webkit-keyframes taufik {
   from {opacity:0;}
@@ -177,4 +176,47 @@ ul#piano li span.active{
 @keyframes taufik {
   from {opacity:0;}
   to {opacity:1;}
+}
+
+/* dialog */
+.modal {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px);
+}
+
+.dialog {
+  width: 30em;
+  background-color: #fff;
+  border: 1px solid black;
+  border-radius: 20px;
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog > div {
+  margin: .5em 0;
+}
+
+.btn {
+  padding: .5em 1.2em;
+  border: 1px solid black;
+  border-radius: .5em;
+  background-color: #1e1efe;
+  color: #fefefe;
+  width: fit-content;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.hidden {
+  visibility: hidden;
 }
