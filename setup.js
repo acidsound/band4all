@@ -53,9 +53,9 @@ onMessageArrived = function (message, topic) {
       createPeerFactory({ peerId: id, initiator: true }),
     [`${room}/leave`]: ({ id }) => peers[id]?.destroy() || delete peers[id],
     [`${room}/signal/${userId}`]: ({ id, signal }) =>
-      (
-        peers[id] || createPeerFactory({ peerId: id, initiator: false })
-      ).signal(signal),
+      (peers[id] || createPeerFactory({ peerId: id, initiator: false })).signal(
+        signal
+      ),
   }[message.destinationName](parsedMessage));
 };
 
@@ -74,17 +74,17 @@ const willMessage = Object.assign(
 client.connect({ onSuccess: onConnect, useSSL: true, willMessage });
 
 navigator.requestMIDIAccess &&
-navigator.requestMIDIAccess().then((ma) =>
-  Array.from(ma.inputs).forEach(
-    (input) =>
-      (input[1].onmidimessage = function ({ data }) {
-        const [msg, key, val] = data;
-        if (msg === 144) {
-          playKey(val / 127.0, key);
-        }
-      })
-  )
-);
+  navigator.requestMIDIAccess().then((ma) =>
+    Array.from(ma.inputs).forEach(
+      (input) =>
+        (input[1].onmidimessage = function ({ data }) {
+          const [msg, key, val] = data;
+          if (msg === 144) {
+            playKey(val / 127.0, key);
+          }
+        })
+    )
+  );
 
 createPeerFactory = ({ peerId, initiator }) => {
   const peer = new SimplePeer({
