@@ -71,7 +71,13 @@ const willMessage = Object.assign(
   }
 );
 
-client.connect({ onSuccess: onConnect, useSSL: true, willMessage });
+client.connect({
+  onSuccess: onConnect,
+  useSSL: true,
+  userName: "test",
+  password: "test",
+  willMessage,
+});
 
 navigator.requestMIDIAccess &&
   navigator.requestMIDIAccess().then((ma) =>
