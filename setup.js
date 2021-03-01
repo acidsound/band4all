@@ -146,3 +146,6 @@ broadCast = function ({ destination, patch, vel, key }) {
   });
 };
 
+context = new AudioContext();
+console.log("audioContext state", context.state);
+

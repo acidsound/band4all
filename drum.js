@@ -1,6 +1,3 @@
-context = new AudioContext();
-console.log("audioContext state", context.state);
-
 document.addEventListener("DOMContentLoaded", function () {
   document
     .querySelector(".modal>.dialog>.btnOk")
