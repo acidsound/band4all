@@ -11,6 +11,7 @@
   margin:0px;
   padding:0px;
   list-style:none;
+  -webkit-touch-callout:none;
 }
 
 :focus {
@@ -18,13 +19,22 @@
 }
 
 body {
+  height: 100vh;
   background:#666;
   background:-webkit-radial-gradient(bottom left,cover,#999,#666);
   background:-moz-radial-gradient(bottom left,cover,#999,#666);
   background:-ms-radial-gradient(bottom left,cover,#999,#666);
   background:-o-radial-gradient(bottom left,cover,#999,#666);
   background:radial-gradient(bottom left,cover,#999,#666);
-  height:500px;
+  -webkit-font-smoothing: antialiased;
+  font-size: 0.6em;
+  line-height: 1.47059;
+  font-weight: 400;
+  letter-spacing: -.022em;
+  font-family: "SF Pro Text","SF Pro Icons","Helvetica Neue","Helvetica","Arial",sans-serif;
+  background-color: #fff;
+  color: #1d1d1f;
+  font-style: normal;  
 }
 
 a {
@@ -219,4 +229,42 @@ ul#piano li span.active{
 
 .hidden {
   visibility: hidden;
+}
+
+#debug {
+  position: fixed;
+  bottom: .5em;
+  right: .5em;
+  padding: .5em 1em;
+  border-radius: 1em;
+  border: 1px solid black;
+  background-color: white;
+  justify-content: center;
+  text-align: center;
+  line-height: 1em;
+  cursor: pointer;
+}
+
+#log {
+  position: fixed;
+  bottom: 0;
+  overflow-y: scroll;
+  outline: 1px #555 solid;
+  margin: .5em;
+  background-color: forestgreen;
+  color: cornsilk;
+  width: 96vw;
+  height: 20em;
+  padding: .5rem;
+  overflow-wrap: break-word;
+  opacity: 0.5;
+}
+
+#grid {
+  display: flex;
+}
+
+#container > #grid > li > .anchor {
+  margin: 0.1em;
+  border: 1px solid #fff;
 }

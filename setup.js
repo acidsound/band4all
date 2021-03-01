@@ -118,7 +118,7 @@ createPeerFactory = ({ peerId, initiator }) => {
     const msg = data.toString();
     if (msg[0] === "@") {
       const [prg, key, vel, senderId, timeStamp] = msg.slice(1).split("/");
-      console.log("latency:", Date.now()-timeStamp);
+      console.log("latency:", Date.now() - timeStamp);
       if (senderId !== userId) {
         const programMap = {
           drum: () => playDrum(vel, key, false),
@@ -148,4 +148,3 @@ broadCast = function ({ destination, patch, vel, key }) {
 
 context = new AudioContext();
 console.log("audioContext state", context.state);
-
