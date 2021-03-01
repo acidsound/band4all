@@ -130,3 +130,12 @@ createPeerFactory = ({ peerId, initiator }) => {
   });
   return (peers[peerId] = peer);
 };
+
+broadCast = function ({ destination, patch, vel, key }) {
+  Object.values(peers).forEach((peer) => {
+    if (peer.connected) {
+      peer.send(`@${patch}/${key}/${vel}/${userId}/${Date.now()}`);
+    }
+  });
+};
+

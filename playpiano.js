@@ -28,6 +28,6 @@ playKey = function (vel, key, isLocal = true) {
     elem && elem.classList.remove("active");
   }
   if (isLocal) {
-    broadCast({ destination: room, vel, key });
+    broadCast({ destination: room, patch: "piano", vel, key });
   }
 };

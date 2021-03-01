@@ -160,6 +160,6 @@ playDrum = function (vel, key, isLocal = true) {
     elem.classList.remove("active");
   }
   if (isLocal) {
-    broadCast({ destination: room, vel, key });
+    broadCast({ destination: room, patch: "drum", vel, key });
   }
 };

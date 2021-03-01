@@ -1,14 +1,6 @@
 context = new AudioContext();
 console.log("audioContext state", context.state);
 
-broadCast = function ({ destination, vel, key }) {
-  Object.values(peers).forEach((peer) => {
-    if (peer.connected) {
-      peer.send(`@piano/${key}/${vel}/${userId}`);
-    }
-  });
-};
-
 document.addEventListener("DOMContentLoaded", function () {
   document
     .querySelector(".modal>.dialog>.btnOk")
