@@ -117,7 +117,8 @@ createPeerFactory = ({ peerId, initiator }) => {
   peer.on("data", (data) => {
     const msg = data.toString();
     if (msg[0] === "@") {
-      const [prg, key, vel, senderId] = msg.slice(1).split("/");
+      const [prg, key, vel, senderId, timeStamp] = msg.slice(1).split("/");
+      console.log("latency:", Date.now()-timeStamp);
       if (senderId !== userId) {
         const programMap = {
           drum: () => playDrum(vel, key, false),
