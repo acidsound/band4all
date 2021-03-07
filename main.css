@@ -262,9 +262,15 @@ ul#piano li span.active{
 
 #grid {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
 #container > #grid > li > .anchor {
   margin: 0.1em;
   border: 1px solid #fff;
+  width: 23vw;
+  height: 23vw;
+  background-color: #aaa;
 }
