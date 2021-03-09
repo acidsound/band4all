@@ -1,4 +1,10 @@
+const debug = false
+
+console._log = console.log
+
 console.log = function () {
+  if (debug)
+    console._log(...arguments)
   const logElement = document.querySelector("#log");
   logElement.textContent =
     Array.from(arguments)
