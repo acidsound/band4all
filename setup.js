@@ -5,6 +5,8 @@ client = new Paho.MQTT.Client(
   Number(443),
   `band4all_${userId}`
 );
+
+AudioContext = window.AudioContext || window.webkitAudioContext;
 room = new URLSearchParams(location.search).get("room") || "lobby";
 sendMessage = (dstName, msg) => {
   console.log(dstName);
