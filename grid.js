@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function () {
       document.querySelector(".modal").classList.add("hidden");
       context.state === "suspended" && (await context.resume());
       console.log("audioContext state", context.state);
-      evt.preventDefault();
       document.querySelectorAll("#grid .anchor").forEach((pad) => {
         console.log(pad.getAttribute("data-note"));
         pad.addEventListener(
@@ -50,10 +49,22 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           false
         );
+        pad.addEventListener(
+          "touchend",
+          (e) => {
+            const touches = e.changedTouches;
+            const key = pad.getAttribute("data-note");
+            console.log("TouchesEnd", key, touches.length);
+            playKey(0, key);
+            e.preventDefault();
+          },
+          false
+        );  
       });
       window.addEventListener("touchend", function (e) {
         const key = e.target.getAttribute("data-note");
         key && playKey(0, key);
       });
+      evt.preventDefault();
     });
 });
