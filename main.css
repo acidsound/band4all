@@ -275,10 +275,45 @@ ul#piano li span.active{
   justify-content: center;
 }
 
+#container {
+  --pad-highlight: rgba(255, 255, 255, 0.2);
+  --pad-highlight-active: rgba(200, 200, 200, 0.2);
+  --pad-shadow: rgba(0, 0, 0, 0.25);
+  --pad-shadow-active: rgba(0, 0, 0, 0.15);
+  --pad-shadow-up: 1vw;
+  --pad-shadow-down: -1vw;
+  --pad-shadow-blur: 1vw;
+}
+#container > #grid {
+  padding: 0.5%;
+}
+#container > #grid > li {
+  position: relative;
+  width: 25%;
+}
+#container > #grid > li:before {
+  display: block;
+  content: "";
+  padding-top: 100%;
+}
 #container > #grid > li > .anchor {
-  margin: 0.1em;
-  border: 1px solid #fff;
-  width: 23vw;
-  height: 23vw;
-  background-color: #aaa;
+  position: absolute;
+  top: 1%;
+  right: 1%;
+  bottom: 1%;
+  left: 1%;
+  border: 1px solid #666;
+ 
+  border-radius: 2px;
+  box-shadow: inset var(--pad-shadow-down) var(--pad-shadow-down) var(--pad-shadow-blur) 0px var(--pad-shadow),
+              inset var(--pad-shadow-up) var(--pad-shadow-up) var(--pad-shadow-blur) 0px var(--pad-highlight);
+  background: radial-gradient(circle, rgba(208,208,208,1) 0%, rgba(170,170,170,1) 100%);
+  transition: 40ms;
+}
+#container > #grid > li > .anchor.active {
+  box-shadow: inset var(--pad-shadow-down) var(--pad-shadow-down) var(--pad-shadow-blur) 0px var(--pad-shadow-active),
+              inset var(--pad-shadow-up) var(--pad-shadow-up) var(--pad-shadow-blur) 0px var(--pad-highlight-active);
+  background: radial-gradient(circle, rgba(200,200,200,1) 0%, rgba(170,170,170,1) 100%);
+  transform: scale3d(0.9875, 0.9875, 1.0);
+
 }
