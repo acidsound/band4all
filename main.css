@@ -15,6 +15,10 @@
   touch-action: manipulation;
 }
 
+*, *:after, *:before {
+  box-sizing: border-box;
+}
+
 :focus {
   outline:none !important;
 }
