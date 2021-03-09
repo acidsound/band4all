@@ -41,6 +41,8 @@ body {
   color: #1d1d1f;
   font-style: normal;  
   touch-action: manipulation; 
+  margin: 0;
+  padding: 0;
 }
 
 a {
