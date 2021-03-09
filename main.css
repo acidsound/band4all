@@ -264,7 +264,7 @@ ul#piano li span.active{
 
 #grid {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap-reverse;
   align-items: center;
   justify-content: center;
 }
