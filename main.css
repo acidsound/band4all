@@ -359,7 +359,7 @@ body.body--grid,
   --pad-text-color: rgba(227, 236, 255, 0.95);
   --pad-bg-color: rgba(62, 98, 255, 0.466);
   --pad-bg-glow: 0 0 32px 0 rgba(0, 89, 255, 0.5);
-  filter: blur(1px);
+  /* filter: blur(1px); */
   opacity: 0.75;
 }
 #container > #grid > li .active--network .anchor__key {
@@ -367,6 +367,6 @@ body.body--grid,
   --pad-text-color: rgba(255, 255, 255, 0.95);
   --pad-bg-color: rgba(255, 255, 255, 0.15);
   --pad-bg-glow: 0 0 32px 0 rgba(255, 255, 255, 0.5);
-  filter: blur(1px);
+  /* filter: blur(1px); */
   opacity: 0.75;
 }
