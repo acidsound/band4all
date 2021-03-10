@@ -336,6 +336,7 @@ body.body--grid,
   --pad-text-color: rgb(50, 50, 50, 0.25);
   --pad-bg-color: rgba(255, 255, 255, 0);
   --pad-bg-glow: 0;
+  pointer-events: none;
   font-size: 27px;
   font-weight: bold;
   line-height: 27px;
