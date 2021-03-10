@@ -22,10 +22,15 @@ const playPiano = function (context, vel, freq) {
 playKey = function (vel, key, isLocal = true) {
   let elem = document.querySelector(`[data-note='${key}']`);
   if (vel > 0) {
-    elem && elem.classList.add("active");
+    if (!isLocal) {
+      elem && elem.classList.add("active--network");
+    } else {
+      elem && elem.classList.add("active");
+    }
     playPiano(context, vel, midi2Freq(+key));
   } else {
     elem && elem.classList.remove("active");
+    elem && elem.classList.remove("active--network");
   }
   if (isLocal) {
     broadCast({ destination: room, patch: "piano", vel, key });
