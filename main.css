@@ -290,8 +290,6 @@ body.body--grid,
   --pad-shadow-up: 1vw;
   --pad-shadow-down: -1vw;
   --pad-shadow-blur: 1vw;
-
-  
 }
 #container > #grid {
   padding: 0.5%;
@@ -316,7 +314,6 @@ body.body--grid,
   align-items: center;
   justify-content: center;
   user-select: none;
- 
   border-radius: 2px;
   box-shadow: inset var(--pad-shadow-down) var(--pad-shadow-down) var(--pad-shadow-blur) 0px var(--pad-shadow),
               inset var(--pad-shadow-up) var(--pad-shadow-up) var(--pad-shadow-blur) 0px var(--pad-highlight);

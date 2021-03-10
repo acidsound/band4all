@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
         pad.addEventListener(
           "touchmove",
           (e) => {          
+            console.log(e)
             if (e.changedTouches.length && e.changedTouches[0]) {
               const moved = e.changedTouches[0]
               const movedEl = document.elementFromPoint(moved.clientX, moved.clientY);
