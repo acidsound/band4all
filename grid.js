@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const key = pad.getAttribute("data-note");
             console.log("TouchesEnd", key, touches.length);
             playKey(0, key);
+            playKey(0, lastNote);
             e.preventDefault();
           },
           false
