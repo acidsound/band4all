@@ -6,6 +6,7 @@
  * Please do not replace or remove the attribution above if you want to save/modify this project legally.
  * Good luck!
  */
+ @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 
  * {
   margin:0px;
@@ -275,6 +276,12 @@ ul#piano li span.active{
   justify-content: center;
 }
 
+body.body--grid,
+#container.container--grid {
+  background-color: #333;
+  background-image: none;
+}
+
 #container {
   --pad-highlight: rgba(255, 255, 255, 0.2);
   --pad-highlight-active: rgba(200, 200, 200, 0.2);
@@ -283,6 +290,8 @@ ul#piano li span.active{
   --pad-shadow-up: 1vw;
   --pad-shadow-down: -1vw;
   --pad-shadow-blur: 1vw;
+
+  
 }
 #container > #grid {
   padding: 0.5%;
@@ -302,7 +311,11 @@ ul#piano li span.active{
   right: 1%;
   bottom: 1%;
   left: 1%;
-  border: 1px solid #666;
+  border: 1px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
  
   border-radius: 2px;
   box-shadow: inset var(--pad-shadow-down) var(--pad-shadow-down) var(--pad-shadow-blur) 0px var(--pad-shadow),
@@ -312,8 +325,48 @@ ul#piano li span.active{
 }
 #container > #grid > li > .anchor.active {
   box-shadow: inset var(--pad-shadow-down) var(--pad-shadow-down) var(--pad-shadow-blur) 0px var(--pad-shadow-active),
-              inset var(--pad-shadow-up) var(--pad-shadow-up) var(--pad-shadow-blur) 0px var(--pad-highlight-active);
+              inset var(--pad-shadow-up) var(--pad-shadow-up) var(--pad-shadow-blur) 0px var(--pad-highlight-active),
+              inset 0 0 32px 0 rgba(255, 255, 255, 0.5);
   background: radial-gradient(circle, rgba(200,200,200,1) 0%, rgba(170,170,170,1) 100%);
   transform: scale3d(0.9875, 0.9875, 1.0);
 
+}
+#container > #grid > li .anchor__key {
+  --pad-text-glow:  0 0 16px rgba(0, 0, 0, 0.25), 0 0 4px rgba(100, 100, 100, 1.0);
+  --pad-text-color: rgb(50, 50, 50, 0.25);
+  --pad-bg-color: rgba(255, 255, 255, 0);
+  --pad-bg-glow: 0;
+  font-size: 27px;
+  font-weight: bold;
+  line-height: 27px;
+  letter-spacing: 0.5px;
+  font-family: "Anton", sans-serif;
+  text-shadow: var(--pad-text-glow);
+  color: var(--pad-text-color);
+  box-shadow: var(--pad-bg-glow);
+  background-color: var(--pad-bg-color);
+  opacity: 0.5;
+  transition: 88ms;
+  filter: blur(0px);
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+#container > #grid > li .active .anchor__key {
+  --pad-text-glow: 0 0 16px rgba(143, 159, 255, 0.25), 0 0 4px rgb(36, 105, 255);
+  --pad-text-color: rgba(227, 236, 255, 0.95);
+  --pad-bg-color: rgba(62, 98, 255, 0.466);
+  --pad-bg-glow: 0 0 32px 0 rgba(0, 89, 255, 0.5);
+  filter: blur(1px);
+  opacity: 0.75;
+}
+#container > #grid > li .active--network .anchor__key {
+  --pad-text-glow: 0 0 16px rgba(255, 255, 255, 0.25), 0 0 4px rgba(200, 200, 200, 1.0);
+  --pad-text-color: rgba(255, 255, 255, 0.95);
+  --pad-bg-color: rgba(255, 255, 255, 0.15);
+  --pad-bg-glow: 0 0 32px 0 rgba(255, 255, 255, 0.5);
+  filter: blur(1px);
+  opacity: 0.75;
 }
