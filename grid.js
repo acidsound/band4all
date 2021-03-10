@@ -1,4 +1,10 @@
+const debug = false
+
+console._log = console.log
+
 console.log = function () {
+  if (debug)
+    console._log(...arguments)
   const logElement = document.querySelector("#log");
   logElement.textContent =
     Array.from(arguments)
@@ -30,6 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     evt.preventDefault();
   });
+
+  let lastNote
+
   document
     .querySelector(".modal>.dialog>.btnOk")
     .addEventListener("click", async (evt) => {
@@ -43,9 +52,29 @@ document.addEventListener("DOMContentLoaded", function () {
           (e) => {
             const touches = e.changedTouches;
             const key = pad.getAttribute("data-note");
+            lastNote = key
             console.log("Touches", key, touches.length);
             playKey(1, key);
             e.preventDefault();
+          },
+          false
+        );
+        pad.addEventListener(
+          "touchmove",
+          (e) => {          
+            console.log(e)
+            if (e.changedTouches.length && e.changedTouches[0]) {
+              const moved = e.changedTouches[0]
+              const movedEl = document.elementFromPoint(moved.clientX, moved.clientY);
+              if (movedEl != null && movedEl.classList.contains('anchor')) {
+                const key = movedEl.getAttribute('data-note')
+                if (key !== lastNote) {
+                  playKey(0, lastNote);
+                  lastNote = key
+                  playKey(1, key)
+                }
+              }
+            }
           },
           false
         );
