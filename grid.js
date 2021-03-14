@@ -70,7 +70,6 @@ const generatePad = () => {
     pad.addEventListener(
       "touchmove",
       (e) => {
-        console.log(e)
         if (e.changedTouches.length && e.changedTouches[0]) {
           const moved = e.changedTouches[0]
           const movedEl = document.elementFromPoint(moved.clientX, moved.clientY);
@@ -88,19 +87,19 @@ const generatePad = () => {
     ));
 }
 document.addEventListener("DOMContentLoaded", function () {
+  const isDebug = new URLSearchParams(location.search).get("debug");
+  if (!isDebug) {
+    console.log = console._log;
+    document.getElementById("debug").remove();
+  }
   generatePad();
-  $("#debug", ["click", "touchstart"], (evt) => {
+  isDebug && $("#debug", ["click", "touchstart"], (evt) => {
     if ($("#log").classList.contains("hidden")) {
       $("#log").classList.remove("hidden"); init
     } else {
       $("#log").classList.add("hidden");
     }
     evt.preventDefault();
-  });
-  $("#log", ["touchend"], (evt) => {
-    if (evt.touches.length > 1) {
-      $("#log").textContent = "";
-    }
   });
   document
     .querySelector(".modal>.dialog>.btnOk")
