@@ -25,6 +25,7 @@ sendMessage = (dstName, msg) => {
 };
 
 peers = {};
+pingPongTimer = {};
 
 const onConnect = function () {
   client.subscribe(`${room}/join`);
@@ -115,6 +116,9 @@ createPeerFactory = ({ peerId, initiator }) => {
   });
   peer.on("connect", () => {
     console.log("peer:establish datachannel");
+    pingPongTimer[peerId] = setInterval(() => {
+      ping(peer);
+    }, 1000);
   });
   peer.on("data", (data) => {
     const msg = data.toString();
@@ -129,10 +133,18 @@ createPeerFactory = ({ peerId, initiator }) => {
         };
         (programMap[prg] || programMap["none"])();
       }
+    } else if (msg.slice(0, 5) === "#ping") {
+      const timeStamp = msg.slice(1).split("/")[1];
+      pong(peer, timeStamp);
+    } else if (msg.slice(0, 5) === "#pong") {
+      const timeStamp = msg.slice(1).split("/")[1];
+      console.log("rtt:", Date.now() - timeStamp);
     }
   });
   peer.on("close", () => {
     console.log("peer:close peer. peerId:", peerId);
+    clearInterval(pingPongTimer[peerId]);
+    delete pingPongTimer[peerId];
   });
   peer.on("error", (err) => {
     console.log("peer:err:", err);
@@ -146,6 +158,18 @@ broadCast = function ({ destination, patch, vel, key }) {
       peer.send(`@${patch}/${key}/${vel}/${userId}/${Date.now()}`);
     }
   });
+};
+
+ping = function (peer) {
+  if (peer?.connected) {
+    peer.send(`#ping/${Date.now()}`);
+  }
+};
+
+pong = function (peer, timestamp) {
+  if (peer?.connected) {
+    peer.send(`#pong/${timestamp}`);
+  }
 };
 
 context = new AudioContext();
