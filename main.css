@@ -242,7 +242,7 @@ ul#piano li span.active{
 
 #debug {
   position: fixed;
-  bottom: .5em;
+  top: .5em;
   right: .5em;
   padding: .5em 1em;
   border-radius: 1em;
@@ -296,7 +296,7 @@ body.body--grid,
 }
 #container > #grid > li {
   position: relative;
-  width: 25%;
+  width: 20%;
 }
 #container > #grid > li:before {
   display: block;

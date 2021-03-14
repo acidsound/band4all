@@ -27,70 +27,82 @@ $ = (selectors, events = undefined, callback = undefined) => {
   }
 };
 
+let lastNote;
+const generatePad = () => {
+  const st = 40;
+  const ed = st+9*5-1;
+  const scales = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];  
+  const padPanel = document.getElementById("grid");
+  const padElement = padPanel.querySelector("li");
+  for (let key = st; key <= ed; key++) {
+    let padItem = padElement.cloneNode(true);
+    let keyName = scales[(key % 12)];
+    let pad = padItem.querySelector(".anchor");
+    pad.setAttribute("data-note", key);
+    pad.querySelector(".key").textContent = `${keyName.padEnd(2, " ")}${~~(key/12)}`;
+    pad.addEventListener(
+      "touchstart",
+      (e) => {
+        const touches = e.changedTouches;
+        lastNote = key;
+        console.log("Touches", key, touches.length);
+        playKey(1, key);
+        e.preventDefault();
+      },
+      false
+    );
+    pad.addEventListener(
+      "touchend",
+      (e) => {
+        const touches = e.changedTouches;
+        console.log("TouchesEnd", key, touches.length);
+        playKey(0, key);
+        playKey(0, lastNote);
+        e.preventDefault();
+      },
+      false
+    );
+    padPanel.append(padItem);
+    padElement.remove();
+  }
+  /* handle move event */
+  document.querySelectorAll("#grid .anchor").forEach((pad) =>
+    pad.addEventListener(
+      "touchmove",
+      (e) => {
+        console.log(e)
+        if (e.changedTouches.length && e.changedTouches[0]) {
+          const moved = e.changedTouches[0]
+          const movedEl = document.elementFromPoint(moved.clientX, moved.clientY);
+          if (movedEl != null && movedEl.classList.contains('anchor')) {
+            const key = movedEl.getAttribute('data-note')
+            if (key !== lastNote) {
+              playKey(0, lastNote);
+              lastNote = key
+              playKey(1, key)
+            }
+          }
+        }
+      },
+      false
+    ));
+}
 document.addEventListener("DOMContentLoaded", function () {
+  generatePad();
   $("#debug", ["click", "touchstart"], (evt) => {
     if ($("#log").classList.contains("hidden")) {
-      $("#log").classList.remove("hidden");
+      $("#log").classList.remove("hidden"); init
     } else {
       $("#log").classList.add("hidden");
     }
     evt.preventDefault();
   });
-
-  let lastNote
-
   document
     .querySelector(".modal>.dialog>.btnOk")
     .addEventListener("click", async (evt) => {
       document.querySelector(".modal").classList.add("hidden");
       context.state === "suspended" && (await context.resume());
       console.log("audioContext state", context.state);
-      document.querySelectorAll("#grid .anchor").forEach((pad) => {
-        console.log(pad.getAttribute("data-note"));
-        pad.addEventListener(
-          "touchstart",
-          (e) => {
-            const touches = e.changedTouches;
-            const key = pad.getAttribute("data-note");
-            lastNote = key
-            console.log("Touches", key, touches.length);
-            playKey(1, key);
-            e.preventDefault();
-          },
-          false
-        );
-        pad.addEventListener(
-          "touchmove",
-          (e) => {          
-            console.log(e)
-            if (e.changedTouches.length && e.changedTouches[0]) {
-              const moved = e.changedTouches[0]
-              const movedEl = document.elementFromPoint(moved.clientX, moved.clientY);
-              if (movedEl != null && movedEl.classList.contains('anchor')) {
-                const key = movedEl.getAttribute('data-note')
-                if (key !== lastNote) {
-                  playKey(0, lastNote);
-                  lastNote = key
-                  playKey(1, key)
-                }
-              }
-            }
-          },
-          false
-        );
-        pad.addEventListener(
-          "touchend",
-          (e) => {
-            const touches = e.changedTouches;
-            const key = pad.getAttribute("data-note");
-            console.log("TouchesEnd", key, touches.length);
-            playKey(0, key);
-            playKey(0, lastNote);
-            e.preventDefault();
-          },
-          false
-        );  
-      });
       window.addEventListener("touchend", function (e) {
         const key = e.target.getAttribute("data-note");
         key && playKey(0, key);
