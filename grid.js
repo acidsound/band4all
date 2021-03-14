@@ -30,8 +30,8 @@ $ = (selectors, events = undefined, callback = undefined) => {
 let lastNote;
 const generatePad = () => {
   const st = 40;
-  const ed = st+9*5-1;
-  const scales = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];  
+  const ed = st + 9 * 5 - 1;
+  const scales = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
   const padPanel = document.getElementById("grid");
   const padElement = padPanel.querySelector("li");
   for (let key = st; key <= ed; key++) {
@@ -39,7 +39,7 @@ const generatePad = () => {
     let keyName = scales[(key % 12)];
     let pad = padItem.querySelector(".anchor");
     pad.setAttribute("data-note", key);
-    pad.querySelector(".key").textContent = `${keyName.padEnd(2, " ")}${~~(key/12)}`;
+    pad.querySelector(".key").textContent = `${keyName.padEnd(2, " ")}${~~(key / 12)}`;
     pad.addEventListener(
       "touchstart",
       (e) => {
@@ -96,6 +96,11 @@ document.addEventListener("DOMContentLoaded", function () {
       $("#log").classList.add("hidden");
     }
     evt.preventDefault();
+  });
+  $("#log", ["touchend"], (evt) => {
+    if (evt.touches.length > 1) {
+      $("#log").textContent = "";
+    }
   });
   document
     .querySelector(".modal>.dialog>.btnOk")
